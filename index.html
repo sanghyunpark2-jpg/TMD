@@ -480,7 +480,6 @@ export default function App() {
             />
           )}
 
-          {/* 통합 뷰 상단 */}
           {isCombined ? (
             <div style={{ display: "grid", gridTemplateColumns: "0.4fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
               <SummaryCard/>
@@ -505,7 +504,6 @@ export default function App() {
               </div>
             </div>
           ) : (
-            /* 개별 계좌 상단 */
             <div style={{ display: "grid", gridTemplateColumns: "minmax(90px, 0.2fr) 1fr 1fr 0.9fr", gap: 10, marginBottom: 14 }}>
               <SummaryCard/>
               <div style={{ background: "#fff", border: "1px solid #e0e4ef", borderRadius: 10, padding: "10px 12px" }}>
@@ -541,7 +539,6 @@ export default function App() {
             </div>
           )}
 
-          {/* 종목 추가 */}
           {!isCombined && (
             <div style={{ background: "#fff", border: "1px solid #e0e4ef", borderRadius: 12, padding: 14, marginBottom: 14 }}>
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -568,7 +565,6 @@ export default function App() {
             </div>
           )}
 
-          {/* 필터 탭 */}
           <div style={{ display: "flex", gap: 5, marginBottom: 10, flexWrap: "wrap" }}>
             {[["all","전체"], ...CATS.map(c => [c, catLabel[c]])].map(([v, l]) => (
               <button key={v} onClick={() => setTab(v)}
@@ -579,7 +575,6 @@ export default function App() {
             {isCombined  && <span style={{ marginLeft: "auto", fontSize: 11, color: "#888", alignSelf: "center" }}>모든 계좌 합산 · 읽기 전용</span>}
           </div>
 
-          {/* 종목 테이블 */}
           <div style={{ background: "#fff", border: "1px solid #e0e4ef", borderRadius: 12, overflow: "hidden" }}>
             <div style={{ display: "grid", gridTemplateColumns: isCombined ? "16px 1fr 110px" : "16px 1fr 100px 60px",
               padding: "7px 14px", background: "#f0f2f8", fontSize: 10, fontWeight: 700, color: "#888", borderBottom: "1px solid #e8eaf2" }}>
@@ -603,7 +598,6 @@ export default function App() {
             {(() => {
               const rows   = isCombined ? combinedDisplay : displayed;
               const rTotal = rows.reduce((s, x) => s + x.amount, 0);
-              const grand  = isCombined ? combinedTotal : total;
               return rows.length > 0 && (
                 <div style={{ display: "grid", gridTemplateColumns: isCombined ? "16px 1fr 110px" : "16px 1fr 100px 60px",
                   alignItems: "center", padding: "8px 14px", background: "#f0f2f8", borderTop: "2px solid #e0e4ef" }}>
