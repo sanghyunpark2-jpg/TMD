@@ -244,6 +244,94 @@ function AccChip({ a, isActive, isDragOver, rowColor, onAccDragStart, onAccDragE
   );
 }
 
+const COMB_COLS = "16px 52px 55px 68px 50px 1fr 72px 28%";
+
+// ── StockRow (Portfolio 바깥에 정의 → 타이핑 시 커서 유지) ────────
+function StockRow({ s, pct, isLast, isCombinedRow,
+    editId, editForm, setEditForm, saveEdit, setEditId,
+    dragOverIdx, onDragStart, onDragEnd, onDragOver, onDrop,
+    startEdit, deleteStock }) {
+  const isEditing = !isCombinedRow && editId === s.id;
+  return (
+    <div draggable={!isCombinedRow && !isEditing}
+      onDragStart={!isCombinedRow ? e => onDragStart(e, s._idx) : undefined}
+      onDragEnd={!isCombinedRow ? onDragEnd : undefined}
+      onDragOver={!isCombinedRow ? e => onDragOver(e, s._idx) : undefined}
+      onDrop={!isCombinedRow ? e => onDrop(e, s._idx) : undefined}
+      style={{ borderBottom: isLast ? "none" : "1px solid #f0f2f8", borderTop: !isCombinedRow && dragOverIdx === s._idx ? "2px solid #4f8ef7" : "none" }}>
+      {isEditing ? (
+        <>
+          {/* 현재 항목 정보 표시 */}
+          <div style={{ padding:"7px 14px 6px", background:"#fafbff", display:"flex", alignItems:"center", gap:6, borderBottom:"1px dashed #e8eaf2" }}>
+            <span style={{ fontSize:14, color:"#ddd", flexShrink:0 }}>⠿</span>
+            <span style={tagSt(s.category)}>{catLabel[s.category]}</span>
+            {s.sector && <span style={sectorSt}>{s.sector}</span>}
+            <span style={{ fontSize:12, fontWeight:600, color:"#555" }}>{s.name}</span>
+            <span style={{ fontSize:12, color:"#999", marginLeft:2 }}>{fmt(s.amount)}</span>
+          </div>
+          {/* 수정 입력 — 한 줄 */}
+          <div style={{ padding:"8px 14px", background:"#fafbff", display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center" }}>
+            <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} placeholder="종목명"
+              style={{ flex:"2 1 60px", minWidth:0, padding:"5px 6px", fontSize:11, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
+            <input type="number" value={editForm.amount} onChange={e => setEditForm({...editForm, amount: e.target.value})} placeholder="금액"
+              style={{ flex:"1 1 50px", minWidth:0, padding:"5px 6px", fontSize:11, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
+            <input value={editForm.sector || ""} onChange={e => setEditForm({...editForm, sector: e.target.value})} placeholder="섹터"
+              style={{ flex:"1 1 40px", minWidth:0, padding:"5px 6px", fontSize:11, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
+            {CATS.map(cat => (
+              <button key={cat} onClick={() => setEditForm({...editForm, category: cat})}
+                style={{ fontSize:9, fontWeight:600, padding:"5px 5px", borderRadius:6, cursor:"pointer", flexShrink:0,
+                  border:"1px solid " + (editForm.category === cat ? catColor[cat] : "#dde1ec"),
+                  background: editForm.category === cat ? catColor[cat] : "#f7f8fc",
+                  color: editForm.category === cat ? "#fff" : "#666" }}>{catShort[cat]}</button>
+            ))}
+            <button onClick={saveEdit} style={{...smBtn("#1a1a2e","#fff"), padding:"5px 10px", fontSize:11, flexShrink:0}}>저장</button>
+            <button onClick={() => setEditId(null)} style={{...smBtn("#eee","#555"), padding:"5px 8px", fontSize:11, flexShrink:0}}>취소</button>
+          </div>
+        </>
+      ) : isCombinedRow ? (
+        <div style={{ display:"grid", gridTemplateColumns:COMB_COLS, alignItems:"center", padding:"7px 14px", columnGap:4 }}>
+          <span/>
+          <span style={tagSt(s.category)}>{catLabel[s.category]}</span>
+          <span style={{ fontSize:9, color:"#666", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{s.sector || ""}</span>
+          <FitText width="68px">{s.name}</FitText>
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
+            <span style={{ fontSize:8, color:"#bbb", lineHeight:1 }}>비중</span>
+            <span style={{ fontSize:11, fontWeight:700, color:catColor[s.category], lineHeight:1.4 }}>{pct.toFixed(1)}%</span>
+          </div>
+          <div style={{ height:10, background:"#f0f2f8", borderRadius:5 }}>
+            <div style={{ width:pct+"%", height:"100%", background:catColor[s.category], borderRadius:5, transition:"width 0.3s" }}/>
+          </div>
+          <span style={{ fontSize:12, fontWeight:700, color:catColor[s.category], textAlign:"left" }}>{fmt(s.amount)}</span>
+          <SourcesCell sources={s.sources}/>
+        </div>
+      ) : (
+        <div style={{ display:"grid", gridTemplateColumns:"16px 1fr 100px 60px", alignItems:"center", padding:"7px 14px", cursor:"grab" }}>
+          <span style={{ fontSize:16, color:"#ccc", userSelect:"none" }}>⠿</span>
+          <div style={{ minWidth:0 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              <span style={tagSt(s.category)}>{catLabel[s.category]}</span>
+              {s.sector && <span style={sectorSt}>{s.sector}</span>}
+              <FitText>{s.name}</FitText>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", width:46, flexShrink:0 }}>
+                <span style={{ fontSize:8, color:"#bbb", lineHeight:1 }}>비중</span>
+                <span style={{ fontSize:11, fontWeight:700, color:catColor[s.category], lineHeight:1.4 }}>{pct.toFixed(1)}%</span>
+              </div>
+              <div style={{ flex:1, height:10, background:"#f0f2f8", borderRadius:5, minWidth:20, marginLeft:6 }}>
+                <div style={{ width:pct+"%", height:"100%", background:catColor[s.category], borderRadius:5, transition:"width 0.3s" }}/>
+              </div>
+            </div>
+          </div>
+          <span style={{ textAlign:"right", fontSize:12, fontWeight:700, color:catColor[s.category] }}>{fmt(s.amount)}</span>
+          <div style={{ display:"flex", justifyContent:"center", gap:4 }}>
+            <button onClick={() => startEdit(s)} style={iconBtn}>✏️</button>
+            <button onClick={() => deleteStock(s.id)} style={iconBtn}>🗑️</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── 이름 입력 화면 ─────────────────────────────────────────────────
 function NameEntry({ onSubmit }) {
   const [input, setInput] = useState("");
@@ -427,6 +515,8 @@ function Portfolio({ name, onChangeName }) {
   const onAccDrop    =(e,row,idx)=>{e.preventDefault();doAccDrop(row,idx);};
   const onRowDrop    =(e,row)=>{e.preventDefault();doAccDrop(row,accRows[row].length);};
   const onRowDragOver=(e,row)=>{e.preventDefault();if(accDragSrc)setAccDragTgt({row,idx:accRows[row].length});};
+
+  const srProps = {editId,editForm,setEditForm,saveEdit,setEditId,dragOverIdx,onDragStart,onDragEnd,onDragOver,onDrop,startEdit,deleteStock};
 
   if(!loaded) return (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100vh", color:"#888" }}>
@@ -703,7 +793,7 @@ function Portfolio({ name, onChangeName }) {
                 ?<div style={{ textAlign:"center", color:"#bbb", fontSize:13, padding:"30px 0" }}>종목이 없습니다.</div>
                 :combinedDisplay.map((s,idx)=>{
                   const pct=combinedTotal>0?s.amount/combinedTotal*100:0;
-                  return <StockRow key={s.id} s={s} pct={pct} isLast={idx===combinedDisplay.length-1} isCombinedRow={true}/>;
+                  return <StockRow key={s.id} s={s} pct={pct} isLast={idx===combinedDisplay.length-1} isCombinedRow={true} {...srProps}/>;
                 })
               }
               {combinedDisplay.length>0&&(
@@ -722,7 +812,7 @@ function Portfolio({ name, onChangeName }) {
                 ?<div style={{ textAlign:"center", color:"#bbb", fontSize:13, padding:"30px 0" }}>종목이 없습니다.</div>
                 :displayed.map((s,idx)=>{
                   const pct=total>0?s.amount/total*100:0;
-                  return <StockRow key={s.id} s={{...s,_idx:idx}} pct={pct} isLast={idx===displayed.length-1} isCombinedRow={false}/>;
+                  return <StockRow key={s.id} s={{...s,_idx:idx}} pct={pct} isLast={idx===displayed.length-1} isCombinedRow={false} {...srProps}/>;
                 })
               }
               {displayed.length>0&&(
