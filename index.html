@@ -475,23 +475,23 @@ function Portfolio({ name, onChangeName }) {
         onDrop={!isCombinedRow?e=>onDrop(e,s._idx):undefined}
         style={{ borderBottom:isLast?"none":"1px solid #f0f2f8", borderTop:!isCombinedRow&&dragOverIdx===s._idx?"2px solid #4f8ef7":"none" }}>
         {isEditing?(
-          <div style={{ padding:"10px 14px", background:"#fafbff", display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
-            <span style={{ fontSize:16, color:"#ccc" }}>⠿</span>
+          <div style={{ padding:"8px 14px", background:"#fafbff", display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center", overflow:"hidden" }}>
+            <span style={{ fontSize:16, color:"#ccc", flexShrink:0 }}>⠿</span>
             <input value={editForm.name} onChange={e=>setEditForm({...editForm,name:e.target.value})} placeholder="종목명"
-              style={{ flex:"1 1 80px", padding:"5px 8px", fontSize:12, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
+              style={{ flex:"2 1 60px", minWidth:0, padding:"5px 6px", fontSize:11, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
             <input value={editForm.sector||""} onChange={e=>setEditForm({...editForm,sector:e.target.value})} placeholder="섹터"
-              style={{ flex:"1 1 60px", padding:"5px 8px", fontSize:12, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
+              style={{ flex:"1 1 40px", minWidth:0, padding:"5px 6px", fontSize:11, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
             <input type="number" value={editForm.amount} onChange={e=>setEditForm({...editForm,amount:e.target.value})} placeholder="금액"
-              style={{ flex:"1 1 70px", padding:"5px 8px", fontSize:12, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
+              style={{ flex:"1 1 50px", minWidth:0, padding:"5px 6px", fontSize:11, border:"1px solid #b8d0f7", borderRadius:6, outline:"none" }}/>
             {CATS.map(cat=>(
               <button key={cat} onClick={()=>setEditForm({...editForm,category:cat})}
-                style={{ fontSize:10, fontWeight:600, padding:"5px 8px", borderRadius:6, cursor:"pointer",
+                style={{ fontSize:9, fontWeight:600, padding:"5px 5px", borderRadius:6, cursor:"pointer", flexShrink:0,
                   border:"1px solid "+(editForm.category===cat?catColor[cat]:"#dde1ec"),
                   background:editForm.category===cat?catColor[cat]:"#f7f8fc",
                   color:editForm.category===cat?"#fff":"#666" }}>{catShort[cat]}</button>
             ))}
-            <button onClick={saveEdit} style={smBtn("#1a1a2e","#fff")}>저장</button>
-            <button onClick={()=>setEditId(null)} style={smBtn("#eee","#555")}>취소</button>
+            <button onClick={saveEdit} style={{...smBtn("#1a1a2e","#fff"),padding:"5px 10px",fontSize:11,flexShrink:0}}>저장</button>
+            <button onClick={()=>setEditId(null)} style={{...smBtn("#eee","#555"),padding:"5px 8px",fontSize:11,flexShrink:0}}>취소</button>
           </div>
         ):isCombinedRow?(
           <div style={{ display:"grid", gridTemplateColumns:COMB_COLS, alignItems:"center", padding:"7px 14px", columnGap:4 }}>
